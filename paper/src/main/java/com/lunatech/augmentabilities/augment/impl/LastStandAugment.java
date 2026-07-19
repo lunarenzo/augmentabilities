@@ -40,7 +40,7 @@ public class LastStandAugment implements Augment {
             victim.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 60, 1));
             victim.getWorld().spawnParticle(Particle.CRIT, victim.getLocation().add(0, 1, 0), 10, 0.5, 0.5, 0.5, 0.05);
             profile.setCooldown(getId(), 60000);
-            victim.sendMessage(ColorParser.of("<red>Last Stand activated!</red>").build());
+            victim.sendMessage(ColorParser.of(io.github.milkdrinkers.wordweaver.Translation.of("augments.last-stand.activated")).build());
         }
     }
 }

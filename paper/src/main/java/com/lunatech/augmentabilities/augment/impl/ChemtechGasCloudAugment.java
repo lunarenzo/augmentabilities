@@ -53,7 +53,7 @@ public class ChemtechGasCloudAugment implements Augment {
                 cloud.setSource(player);
 
                 profile.setCooldown(getId(), 30000);
-                player.sendMessage(ColorParser.of("<green>Chemtech Gas Cloud deployed!</green>").build());
+                player.sendMessage(ColorParser.of(io.github.milkdrinkers.wordweaver.Translation.of("augments.chemtech.activated")).build());
             }
         }
     }

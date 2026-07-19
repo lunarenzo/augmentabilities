@@ -44,7 +44,7 @@ public class HextechOverdriveAugment implements Augment {
             // Cosmetic lightning and particles
             victim.getWorld().strikeLightningEffect(victim.getLocation());
             victim.getWorld().spawnParticle(Particle.CRIT, victim.getLocation().add(0, 1, 0), 20, 0.3, 0.5, 0.3, 0.2);
-            attacker.sendMessage(ColorParser.of("<yellow>Hextech Overdrive triggered!</yellow>").build());
+            attacker.sendMessage(ColorParser.of(io.github.milkdrinkers.wordweaver.Translation.of("augments.hextech.activated")).build());
         }
     }
 }

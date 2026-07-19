@@ -8,6 +8,7 @@ import com.lunatech.augmentabilities.AbstractAugmentAbilities;
 import com.lunatech.augmentabilities.AugmentAbilities;
 import com.lunatech.augmentabilities.profile.PlayerAugmentProfile;
 import io.github.milkdrinkers.colorparser.paper.ColorParser;
+import io.github.milkdrinkers.wordweaver.Translation;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -63,7 +64,7 @@ final class AugmentAbilitiesCommand extends Command {
             .withHelp("Admin controls for augments.", "Admin controls for augments.")
             .withPermission(BASE_PERM + ".admin")
             .withSubcommands(
-                new CommandAPICommand("give")
+                 new CommandAPICommand("give")
                     .withArguments(new EntitySelectorArgument.OnePlayer("target"))
                     .withArguments(new IntegerArgument("rolls", 1, 100))
                     .executes((sender, args) -> {
@@ -73,8 +74,15 @@ final class AugmentAbilitiesCommand extends Command {
                             PlayerAugmentProfile profile = ((AugmentAbilities) plugin).getAugmentService().getProfile(target.getUniqueId());
                             profile.setPendingRolls(profile.getPendingRolls() + rolls);
                             ((AugmentAbilities) plugin).getAugmentService().saveProfileAsync(target.getUniqueId());
-                            sender.sendMessage("Gave " + rolls + " rolls to " + target.getName());
-                            target.sendMessage(ColorParser.of("<gold>You received " + rolls + " augment rolls from an admin!</gold>").build());
+                            
+                            sender.sendMessage(ColorParser.of(Translation.of("commands-augment.give-success"))
+                                .with("rolls", String.valueOf(rolls))
+                                .with("player", target.getName())
+                                .build());
+                            
+                            target.sendMessage(ColorParser.of(Translation.of("commands-augment.received-rolls"))
+                                .with("rolls", String.valueOf(rolls))
+                                .build());
                         }
                     }),
                 new CommandAPICommand("clear")
@@ -85,8 +93,13 @@ final class AugmentAbilitiesCommand extends Command {
                             PlayerAugmentProfile profile = ((AugmentAbilities) plugin).getAugmentService().getProfile(target.getUniqueId());
                             profile.clearAugments();
                             ((AugmentAbilities) plugin).getAugmentService().saveProfileAsync(target.getUniqueId());
-                            sender.sendMessage("Cleared augments for " + target.getName());
-                            target.sendMessage(ColorParser.of("<red>Your augments have been cleared by an admin.</red>").build());
+                            
+                            sender.sendMessage(ColorParser.of(Translation.of("commands-augment.clear-success"))
+                                .with("player", target.getName())
+                                .build());
+                            
+                            target.sendMessage(ColorParser.of(Translation.of("commands-augment.cleared-by-admin"))
+                                .build());
                         }
                     })
             );

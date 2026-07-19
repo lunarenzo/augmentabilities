@@ -22,5 +22,49 @@
       "failure": "<red>Failed to upload dump: <error>",
       "dumping": "<green>Gathering dump information and uploading to mclo.gs..."
     }
+  },
+  "kills-progression": {
+    "earned-direct": "<gold>You earned an immediate Augment Roll for killing <victim> (who had 3 augments equipped)!</gold>",
+    "earned-milestone": "<gold><b>5 KILLS REACHED!</b> You earned 1 Augment Roll. Sneak + Left-Click with empty hand or type /augment to open.</gold>",
+    "register-kill": "<gray>Kill registered. <yellow><remaining></yellow> more kills for an Augment Roll.</gray>",
+    "wiped-on-death": "<red>Your augments were cleared upon death!</red>"
+  },
+  "commands-augment": {
+    "give-success": "<green>Gave <rolls> rolls to <player>.</green>",
+    "received-rolls": "<gold>You received <rolls> augment rolls from an admin!</gold>",
+    "clear-success": "<green>Cleared augments for <player>.</green>",
+    "cleared-by-admin": "<red>Your augments have been cleared by an admin.</red>"
+  },
+  "gui": {
+    "title-management": "Augment Abilities Management",
+    "title-management-colored": "<dark_gray>Augment Abilities</dark_gray>",
+    "title-choose": "Choose 1 Augment",
+    "title-choose-colored": "<dark_gray>Choose 1 Augment</dark_gray>",
+    "unequip-success": "<green>Unequipped: <augment_name></green>",
+    "equip-success": "<green>Equipped <augment_name>!</green>",
+    "equip-failed": "<red>Failed to equip! (Prismatic limit reached?)</red>",
+    "slots-full": "<red>Your slots are full! Unequip an augment first.</red>",
+    "no-rolls-to-spend": "<red>Cannot roll: your slots are full.</red>",
+    "no-more-rolls": "<red>No more augments available to roll!</red>",
+    "empty-slot": "<gray>Empty Slot</gray>",
+    "empty-slot-desc": "<dark_gray>No augment equipped in this slot</dark_gray>",
+    "click-unequip": "<red>Click to Unequip</red>",
+    "click-equip": "<green>Click to Equip</green>",
+    "roll-button": "<gold><b>Roll New Augment</b></gold>",
+    "roll-button-lore-1": "<gray>Available Rolls: <yellow><rolls></yellow></gray>",
+    "roll-button-lore-2": "<green>Click to roll 3 random choices!</green>",
+    "no-rolls-button": "<red>No Rolls Available</red>",
+    "no-rolls-button-lore": "<gray>Kill <yellow>5 players</yellow> to get an augment roll.</gray>"
+  },
+  "augments": {
+    "last-stand": {
+      "activated": "<red>Last Stand activated!</red>"
+    },
+    "chemtech": {
+      "activated": "<green>Chemtech Gas Cloud deployed!</green>"
+    },
+    "hextech": {
+      "activated": "<yellow>Hextech Overdrive triggered!</yellow>"
+    }
   }
 }
