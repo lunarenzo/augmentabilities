@@ -37,7 +37,7 @@ public class CounterStepAugment implements Augment {
     public void onDamageTaken(Player victim, Entity attacker, EntityDamageByEntityEvent event, PlayerAugmentProfile profile) {
         if (victim.isBlocking() && attacker instanceof LivingEntity livingAttacker && !profile.isOnCooldown(getId())) {
             livingAttacker.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 15, 1)); // 0.75s
-            victim.getWorld().spawnParticle(Particle.WIND, victim.getLocation().add(0, 1, 0), 5, 0.2, 0.2, 0.2, 0.1);
+            victim.getWorld().spawnParticle(Particle.CLOUD, victim.getLocation().add(0, 1, 0), 5, 0.2, 0.2, 0.2, 0.1);
             profile.setCooldown(getId(), 15000);
         }
     }

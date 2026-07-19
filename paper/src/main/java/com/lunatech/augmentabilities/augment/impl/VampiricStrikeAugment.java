@@ -36,7 +36,7 @@ public class VampiricStrikeAugment implements Augment {
         if (event.isCritical()) {
             double damage = event.getFinalDamage();
             double heal = damage * 0.15;
-            double maxHealth = attacker.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+            double maxHealth = attacker.getAttribute(Attribute.MAX_HEALTH).getValue();
             attacker.setHealth(Math.min(maxHealth, attacker.getHealth() + heal));
             attacker.getWorld().spawnParticle(Particle.HEART, attacker.getLocation().add(0, 1.5, 0), 3, 0.2, 0.2, 0.2, 0.05);
         }

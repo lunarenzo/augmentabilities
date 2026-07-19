@@ -38,7 +38,7 @@ public class LastStandAugment implements Augment {
         double finalHealth = victim.getHealth() - event.getFinalDamage();
         if (finalHealth < 6.0 && !profile.isOnCooldown(getId())) {
             victim.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 60, 1));
-            victim.getWorld().spawnParticle(Particle.SHIELD, victim.getLocation().add(0, 1, 0), 10, 0.5, 0.5, 0.5, 0.05);
+            victim.getWorld().spawnParticle(Particle.CRIT, victim.getLocation().add(0, 1, 0), 10, 0.5, 0.5, 0.5, 0.05);
             profile.setCooldown(getId(), 60000);
             victim.sendMessage(ColorParser.of("<red>Last Stand activated!</red>").build());
         }

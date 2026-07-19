@@ -2,7 +2,7 @@ package com.lunatech.augmentabilities.command;
 
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.IntegerArgument;
-import dev.jorel.commandapi.arguments.PlayerArgument;
+import dev.jorel.commandapi.arguments.EntitySelectorArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
 import com.lunatech.augmentabilities.AbstractAugmentAbilities;
 import com.lunatech.augmentabilities.AugmentAbilities;
@@ -64,7 +64,7 @@ final class AugmentAbilitiesCommand extends Command {
             .withPermission(BASE_PERM + ".admin")
             .withSubcommands(
                 new CommandAPICommand("give")
-                    .withArguments(new PlayerArgument("target"))
+                    .withArguments(new EntitySelectorArgument.OnePlayer("target"))
                     .withArguments(new IntegerArgument("rolls", 1, 100))
                     .executes((sender, args) -> {
                         Player target = (Player) args.get("target");
@@ -78,7 +78,7 @@ final class AugmentAbilitiesCommand extends Command {
                         }
                     }),
                 new CommandAPICommand("clear")
-                    .withArguments(new PlayerArgument("target"))
+                    .withArguments(new EntitySelectorArgument.OnePlayer("target"))
                     .executes((sender, args) -> {
                         Player target = (Player) args.get("target");
                         if (target != null) {
