@@ -17,6 +17,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import com.lunatech.augmentabilities.service.impl.AugmentMenuHolder;
 
 public class AugmentListener implements Listener {
     private final AugmentService service;
@@ -103,5 +105,16 @@ public class AugmentListener implements Listener {
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
         service.handleKill(killer, victim);
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (event.getInventory().getHolder() instanceof AugmentMenuHolder holder) {
+            event.setCancelled(true);
+            if (!(event.getWhoClicked() instanceof Player player)) return;
+
+            int slot = event.getRawSlot();
+            service.handleMenuClick(player, holder.getType(), slot, holder.getChoices());
+        }
     }
 }

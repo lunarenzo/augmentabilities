@@ -9,17 +9,15 @@ import com.lunatech.augmentabilities.augment.AugmentTier;
 import com.lunatech.augmentabilities.profile.PlayerAugmentProfile;
 import com.lunatech.augmentabilities.service.AugmentService;
 import com.lunatech.augmentabilities.utility.DB;
-import dev.triumphteam.gui.builder.item.ItemBuilder;
-import dev.triumphteam.gui.guis.Gui;
-import dev.triumphteam.gui.guis.GuiItem;
 import io.github.milkdrinkers.colorparser.paper.ColorParser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 
@@ -43,7 +41,6 @@ public class DefaultAugmentService implements AugmentService, Reloadable {
 
     @Override
     public void onEnable(AbstractAugmentAbilities plugin) {
-        // Load profiles for online players if loaded/reloaded at runtime
         for (Player p : Bukkit.getOnlinePlayers()) {
             loadProfileAsync(p.getUniqueId());
         }
@@ -51,7 +48,6 @@ public class DefaultAugmentService implements AugmentService, Reloadable {
 
     @Override
     public void onDisable(AbstractAugmentAbilities plugin) {
-        // Flush all cached profiles to database synchronously on shutdown
         for (UUID uuid : profileCache.keySet()) {
             saveProfileSync(uuid);
         }
@@ -108,7 +104,6 @@ public class DefaultAugmentService implements AugmentService, Reloadable {
                     profile.setPendingRolls(Objects.requireNonNullElse(record.get("rolls", Integer.class), 0));
                 }
 
-                // Cache on main thread
                 Bukkit.getScheduler().runTask(plugin, () -> profileCache.put(uuid, profile));
             } catch (Exception e) {
                 plugin.getComponentLogger().error("Failed to load profile for " + uuid, e);
@@ -147,7 +142,6 @@ public class DefaultAugmentService implements AugmentService, Reloadable {
 
         try (Connection con = DB.getConnection()) {
             DSLContext context = DB.getContext(con);
-            // Universal cross-dialect upsert (delete + insert)
             context.execute("DELETE FROM " + prefix + "profiles WHERE uuid = ?", uuidBytes);
             context.execute(
                 "INSERT INTO " + prefix + "profiles (uuid, augments, kills, rolls) VALUES (?, ?, ?, ?)",
@@ -203,79 +197,86 @@ public class DefaultAugmentService implements AugmentService, Reloadable {
     public void openAugmentMenu(Player player) {
         PlayerAugmentProfile profile = getProfile(player.getUniqueId());
 
-        Gui gui = Gui.gui()
-            .title(Component.text("Augment Abilities Management"))
-            .rows(3)
-            .disableAllInteractions()
-            .create();
+        Inventory inv = Bukkit.createInventory(null, 27, ColorParser.of("Augment Abilities Management").build());
+        AugmentMenuHolder holder = new AugmentMenuHolder("MAIN", inv, Collections.emptyList());
+        inv = Bukkit.createInventory(holder, 27, ColorParser.of("<dark_gray>Augment Abilities</dark_gray>").build());
 
-        gui.getFiller().fill(ItemBuilder.from(Material.GRAY_STAINED_GLASS_PANE).name(Component.empty()).asGuiItem());
+        ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemMeta fillerMeta = filler.getItemMeta();
+        if (fillerMeta != null) {
+            fillerMeta.displayName(Component.empty());
+            filler.setItemMeta(fillerMeta);
+        }
+        for (int i = 0; i < 27; i++) {
+            inv.setItem(i, filler);
+        }
 
         int[] equipSlots = {11, 13, 15};
         int slotIndex = 0;
 
-        for (String id : profile.getEquippedAugmentIds()) {
+        List<String> equippedIdsList = new ArrayList<>(profile.getEquippedAugmentIds());
+        for (String id : equippedIdsList) {
             Augment aug = AugmentRegistry.getAugment(id);
             if (aug != null) {
-                List<Component> lore = new ArrayList<>();
-                for (String line : aug.getDescription()) {
-                    lore.add(MiniMessage.miniMessage().deserialize(line));
-                }
-                lore.add(Component.empty());
-                lore.add(MiniMessage.miniMessage().deserialize("<red>Click to Unequip</red>"));
-
                 Material itemMat = Material.PAPER;
                 if (aug.getTier() == AugmentTier.RARE) itemMat = Material.MAP;
                 if (aug.getTier() == AugmentTier.PRISMATIC) itemMat = Material.NETHER_STAR;
 
-                GuiItem guiItem = ItemBuilder.from(itemMat)
-                    .name(MiniMessage.miniMessage().deserialize(aug.getTier().getColoredName() + " - " + aug.getName()))
-                    .lore(lore)
-                    .asGuiItem(event -> {
-                        profile.unequipAugment(aug.getId());
-                        player.sendMessage(MiniMessage.miniMessage().deserialize("<green>Unequipped: " + aug.getName() + "</green>"));
-                        saveProfileAsync(player.getUniqueId());
-                        openAugmentMenu(player);
-                    });
-
-                gui.setItem(equipSlots[slotIndex++], guiItem);
+                ItemStack item = new ItemStack(itemMat);
+                ItemMeta meta = item.getItemMeta();
+                if (meta != null) {
+                    meta.displayName(ColorParser.of(aug.getTier().getColoredName() + " - " + aug.getName()).build());
+                    List<Component> lore = new ArrayList<>();
+                    for (String line : aug.getDescription()) {
+                        lore.add(ColorParser.of(line).build());
+                    }
+                    lore.add(Component.empty());
+                    lore.add(ColorParser.of("<red>Click to Unequip</red>").build());
+                    meta.lore(lore);
+                    item.setItemMeta(meta);
+                }
+                inv.setItem(equipSlots[slotIndex++], item);
             }
         }
 
         while (slotIndex < 3) {
-            GuiItem emptyItem = ItemBuilder.from(Material.BARRIER)
-                .name(MiniMessage.miniMessage().deserialize("<gray>Empty Slot</gray>"))
-                .lore(MiniMessage.miniMessage().deserialize("<dark_gray>No augment equipped in this slot</dark_gray>"))
-                .asGuiItem();
-            gui.setItem(equipSlots[slotIndex++], emptyItem);
+            ItemStack item = new ItemStack(Material.BARRIER);
+            ItemMeta meta = item.getItemMeta();
+            if (meta != null) {
+                meta.displayName(ColorParser.of("<gray>Empty Slot</gray>").build());
+                meta.lore(List.of(ColorParser.of("<dark_gray>No augment equipped in this slot</dark_gray>").build()));
+                item.setItemMeta(meta);
+            }
+            inv.setItem(equipSlots[slotIndex++], item);
         }
 
         if (profile.getPendingRolls() > 0) {
-            GuiItem rollItem = ItemBuilder.from(Material.GOLD_INGOT)
-                .name(MiniMessage.miniMessage().deserialize("<gold><b>Roll New Augment</b></gold>"))
-                .lore(
-                    MiniMessage.miniMessage().deserialize("<gray>Available Rolls: <yellow>" + profile.getPendingRolls() + "</yellow></gray>"),
+            ItemStack item = new ItemStack(Material.GOLD_INGOT);
+            ItemMeta meta = item.getItemMeta();
+            if (meta != null) {
+                meta.displayName(ColorParser.of("<gold><b>Roll New Augment</b></gold>").build());
+                meta.lore(List.of(
+                    ColorParser.of("<gray>Available Rolls: <yellow>" + profile.getPendingRolls() + "</yellow></gray>").build(),
                     Component.empty(),
-                    MiniMessage.miniMessage().deserialize("<green>Click to roll 3 random choices!</green>")
-                )
-                .asGuiItem(event -> {
-                    if (profile.getEquippedAugmentIds().size() >= 3) {
-                        player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Your slots are full! Unequip an augment first.</red>"));
-                        return;
-                    }
-                    gui.close(player);
-                    triggerRollMenu(player);
-                });
-            gui.setItem(22, rollItem);
+                    ColorParser.of("<green>Click to roll 3 random choices!</green>").build()
+                ));
+                item.setItemMeta(meta);
+            }
+            inv.setItem(22, item);
         } else {
-            GuiItem noRollItem = ItemBuilder.from(Material.COAL)
-                .name(MiniMessage.miniMessage().deserialize("<red>No Rolls Available</red>"))
-                .lore(MiniMessage.miniMessage().deserialize("<gray>Kill <yellow>5 players</yellow> to get an augment roll.</gray>"))
-                .asGuiItem();
-            gui.setItem(22, noRollItem);
+            ItemStack item = new ItemStack(Material.COAL);
+            ItemMeta meta = item.getItemMeta();
+            if (meta != null) {
+                meta.displayName(ColorParser.of("<red>No Rolls Available</red>").build());
+                meta.lore(List.of(
+                    ColorParser.of("<gray>Kill <yellow>5 players</yellow> to get an augment roll.</gray>").build()
+                ));
+                item.setItemMeta(meta);
+            }
+            inv.setItem(22, item);
         }
 
-        gui.open(player);
+        player.openInventory(inv);
     }
 
     @Override
@@ -283,57 +284,113 @@ public class DefaultAugmentService implements AugmentService, Reloadable {
         PlayerAugmentProfile profile = getProfile(player.getUniqueId());
         if (profile.getPendingRolls() <= 0) return;
         if (profile.getEquippedAugmentIds().size() >= 3) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Cannot roll: your slots are full.</red>"));
+            player.sendMessage(ColorParser.of("<red>Cannot roll: your slots are full.</red>").build());
             return;
         }
 
         List<Augment> choices = AugmentRegistry.rollThreeChoices(profile.getEquippedAugmentIds());
         if (choices.isEmpty()) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize("<red>No more augments available to roll!</red>"));
+            player.sendMessage(ColorParser.of("<red>No more augments available to roll!</red>").build());
             return;
         }
 
-        Gui gui = Gui.gui()
-            .title(Component.text("Choose 1 Augment"))
-            .rows(3)
-            .disableAllInteractions()
-            .create();
+        Inventory inv = Bukkit.createInventory(null, 27, ColorParser.of("Choose 1 Augment").build());
+        AugmentMenuHolder holder = new AugmentMenuHolder("ROLL", inv, choices);
+        inv = Bukkit.createInventory(holder, 27, ColorParser.of("<dark_gray>Choose 1 Augment</dark_gray>").build());
 
-        gui.getFiller().fill(ItemBuilder.from(Material.GRAY_STAINED_GLASS_PANE).name(Component.empty()).asGuiItem());
+        ItemStack filler = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+        ItemMeta fillerMeta = filler.getItemMeta();
+        if (fillerMeta != null) {
+            fillerMeta.displayName(Component.empty());
+            filler.setItemMeta(fillerMeta);
+        }
+        for (int i = 0; i < 27; i++) {
+            inv.setItem(i, filler);
+        }
 
         int[] choiceSlots = {11, 13, 15};
 
         for (int i = 0; i < choices.size(); i++) {
             Augment aug = choices.get(i);
-            List<Component> lore = new ArrayList<>();
-            for (String line : aug.getDescription()) {
-                lore.add(MiniMessage.miniMessage().deserialize(line));
-            }
-            lore.add(Component.empty());
-            lore.add(MiniMessage.miniMessage().deserialize("<green>Click to Equip</green>"));
-
             Material itemMat = Material.PAPER;
             if (aug.getTier() == AugmentTier.RARE) itemMat = Material.MAP;
             if (aug.getTier() == AugmentTier.PRISMATIC) itemMat = Material.NETHER_STAR;
 
-            GuiItem guiItem = ItemBuilder.from(itemMat)
-                .name(MiniMessage.miniMessage().deserialize(aug.getTier().getColoredName() + " - " + aug.getName()))
-                .lore(lore)
-                .asGuiItem(event -> {
-                    if (profile.equipAugment(aug)) {
-                        profile.consumePendingRoll();
-                        player.sendMessage(MiniMessage.miniMessage().deserialize("<green>Equipped " + aug.getName() + "!</green>"));
-                        saveProfileAsync(player.getUniqueId());
-                    } else {
-                        player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Failed to equip! (Prismatic limit reached?)</red>"));
-                    }
-                    gui.close(player);
-                    openAugmentMenu(player);
-                });
-            gui.setItem(choiceSlots[i], guiItem);
+            ItemStack item = new ItemStack(itemMat);
+            ItemMeta meta = item.getItemMeta();
+            if (meta != null) {
+                meta.displayName(ColorParser.of(aug.getTier().getColoredName() + " - " + aug.getName()).build());
+                List<Component> lore = new ArrayList<>();
+                for (String line : aug.getDescription()) {
+                    lore.add(ColorParser.of(line).build());
+                }
+                lore.add(Component.empty());
+                lore.add(ColorParser.of("<green>Click to Equip</green>").build());
+                meta.lore(lore);
+                item.setItemMeta(meta);
+            }
+            inv.setItem(choiceSlots[i], item);
         }
 
-        gui.open(player);
+        player.openInventory(inv);
+    }
+
+    @Override
+    public void handleMenuClick(Player player, String menuType, int slot, List<Augment> choices) {
+        PlayerAugmentProfile profile = getProfile(player.getUniqueId());
+
+        if ("MAIN".equals(menuType)) {
+            int[] equipSlots = {11, 13, 15};
+            int listIndex = -1;
+            for (int i = 0; i < equipSlots.length; i++) {
+                if (equipSlots[i] == slot) {
+                    listIndex = i;
+                    break;
+                }
+            }
+
+            if (listIndex != -1) {
+                List<String> equippedIdsList = new ArrayList<>(profile.getEquippedAugmentIds());
+                if (listIndex < equippedIdsList.size()) {
+                    String id = equippedIdsList.get(listIndex);
+                    Augment aug = AugmentRegistry.getAugment(id);
+                    if (aug != null) {
+                        profile.unequipAugment(id);
+                        player.sendMessage(ColorParser.of("<green>Unequipped: " + aug.getName() + "</green>").build());
+                        saveProfileAsync(player.getUniqueId());
+                        openAugmentMenu(player);
+                    }
+                }
+            } else if (slot == 22) {
+                if (profile.getEquippedAugmentIds().size() >= 3) {
+                    player.sendMessage(ColorParser.of("<red>Your slots are full! Unequip an augment first.</red>").build());
+                    return;
+                }
+                triggerRollMenu(player);
+            }
+        } else if ("ROLL".equals(menuType)) {
+            int[] choiceSlots = {11, 13, 15};
+            int choiceIndex = -1;
+            for (int i = 0; i < choiceSlots.length; i++) {
+                if (choiceSlots[i] == slot) {
+                    choiceIndex = i;
+                    break;
+                }
+            }
+
+            if (choiceIndex != -1 && choiceIndex < choices.size()) {
+                Augment aug = choices.get(choiceIndex);
+                if (profile.equipAugment(aug)) {
+                    profile.consumePendingRoll();
+                    player.sendMessage(ColorParser.of("<green>Equipped " + aug.getName() + "!</green>").build());
+                    saveProfileAsync(player.getUniqueId());
+                } else {
+                    player.sendMessage(ColorParser.of("<red>Failed to equip! (Prismatic limit reached?)</red>").build());
+                }
+                player.closeInventory();
+                openAugmentMenu(player);
+            }
+        }
     }
 
     @Override
