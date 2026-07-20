@@ -1,0 +1,100 @@
+# ===================================================================
+#               Augment Abilities Configuration File
+# ===================================================================
+# Fully customize each augment's name, tier, lore description, cooldowns,
+# activation messages, and specific ability attributes!
+# Tiers available: COMMON, RARE, PRISMATIC
+
+vampiric-strike:
+  name: "Vampiric Strike"
+  tier: "COMMON"
+  description:
+    - "<gray>Passive:</gray>"
+    - "<green>Critical strikes</green> heal you for"
+    - "<green>15%</green> of the damage dealt."
+  heal-percentage: 0.15
+
+last-stand:
+  name: "Last Stand"
+  tier: "COMMON"
+  description:
+    - "<gray>Passive Cooldown:</gray>"
+    - "Falling below 3 hearts grants"
+    - "<amber>Resistance II</amber> for <green>3s</green>."
+    - "<dark_gray>Cooldown: 60s</dark_gray>"
+  trigger-health-threshold: 6.0
+  resistance-duration-ticks: 60
+  resistance-amplifier: 1
+  cooldown-ms: 60000
+  activation-message: "<red>Last Stand activated!</red>"
+
+tailwind:
+  name: "Tailwind"
+  tier: "COMMON"
+  description:
+    - "<gray>Sneak Active:</gray>"
+    - "Sneaking grants <aqua>Speed I</aqua> for <green>4s</green>."
+    - "<dark_gray>Cooldown: 15s</dark_gray>"
+  speed-duration-ticks: 80
+  speed-amplifier: 0
+  cooldown-ms: 15000
+
+kinetic-redirection:
+  name: "Kinetic Redirection"
+  tier: "RARE"
+  description:
+    - "<gray>Passive:</gray>"
+    - "Receiving <light_purple>projectile damage</light_purple>"
+    - "stores charges. Your next melee attack"
+    - "deals <green>+1.5 damage</green> per charge (max 3)."
+  bonus-damage-per-stack: 1.5
+
+chemtech-gas-cloud:
+  name: "Chemtech Gas Cloud"
+  tier: "RARE"
+  description:
+    - "<gray>Active:</gray>"
+    - "Right-click sword to drop a"
+    - "<dark_green>Poison Cloud for 3s</dark_green>."
+    - "<dark_gray>Cooldown: 30s</dark_gray>"
+  poison-duration-ticks: 40
+  poison-amplifier: 0
+  cloud-duration-ticks: 60
+  cloud-radius: 2.5
+  durability-cost: 5
+  cooldown-ms: 30000
+  activation-message: "<green>Chemtech Gas Cloud deployed!</green>"
+
+counter-step:
+  name: "Counter-Step"
+  tier: "RARE"
+  description:
+    - "<gray>Passive Cooldown:</gray>"
+    - "Successfully <blue>blocking</blue> an attack gives"
+    - "the attacker <light_purple>Levitation II</light_purple> for 0.75s."
+    - "<dark_gray>Cooldown: 15s</dark_gray>"
+  levitation-duration-ticks: 15
+  levitation-amplifier: 1
+  cooldown-ms: 15000
+
+hextech-overdrive:
+  name: "Hextech Overdrive"
+  tier: "PRISMATIC"
+  description:
+    - "<gray>Passive (Limit 1 Prismatic):</gray>"
+    - "5 consecutive hits deal"
+    - "<gold>+4 True Damage & Lightning</gold>."
+  required-hits: 5
+  bonus-true-damage: 4.0
+  activation-message: "<yellow>Hextech Overdrive triggered!</yellow>"
+
+phase-rift:
+  name: "Phase Rift"
+  tier: "PRISMATIC"
+  description:
+    - "<gray>Sneak-Sprint (Limit 1 Prismatic):</gray>"
+    - "Sneaking while sprinting <light_purple>teleports</light_purple>"
+    - "you 5 blocks forward through spaces."
+    - "<dark_gray>Cooldown: 20s</dark_gray>"
+  teleport-distance: 5.0
+  cooldown-ms: 20000

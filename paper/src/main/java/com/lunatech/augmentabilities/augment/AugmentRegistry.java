@@ -1,5 +1,6 @@
 package com.lunatech.augmentabilities.augment;
 
+import com.lunatech.augmentabilities.config.AugmentsConfig;
 import com.lunatech.augmentabilities.augment.impl.*;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -11,19 +12,32 @@ public final class AugmentRegistry {
     private static final List<Augment> PRISMATICS = new ArrayList<>();
 
     static {
+        init(new AugmentsConfig());
+    }
+
+    public static void init(AugmentsConfig config) {
+        REGISTRY.clear();
+        COMMONS.clear();
+        RARES.clear();
+        PRISMATICS.clear();
+
+        if (config == null) {
+            config = new AugmentsConfig();
+        }
+
         // Common Tiers
-        register(new VampiricStrikeAugment());
-        register(new LastStandAugment());
-        register(new TailwindAugment());
+        register(new VampiricStrikeAugment(config.vampiricStrike));
+        register(new LastStandAugment(config.lastStand));
+        register(new TailwindAugment(config.tailwind));
 
         // Rare Tiers
-        register(new KineticRedirectionAugment());
-        register(new ChemtechGasCloudAugment());
-        register(new CounterStepAugment());
+        register(new KineticRedirectionAugment(config.kineticRedirection));
+        register(new ChemtechGasCloudAugment(config.chemtechGasCloud));
+        register(new CounterStepAugment(config.counterStep));
 
         // Prismatic Tiers
-        register(new HextechOverdriveAugment());
-        register(new PhaseRiftAugment());
+        register(new HextechOverdriveAugment(config.hextechOverdrive));
+        register(new PhaseRiftAugment(config.phaseRift));
     }
 
     private static void register(Augment augment) {
@@ -43,18 +57,12 @@ public final class AugmentRegistry {
         return REGISTRY.values();
     }
 
-    /**
-     * Draws 3 unique random augments for a selection card, ensuring there is a mix of tiers:
-     * e.g., 1 Prismatic/Legendary, 1 Rare, and 1 Common, or randomized based on typical weights.
-     */
     public static List<Augment> rollThreeChoices(Set<String> alreadyEquipped) {
         List<Augment> choices = new ArrayList<>();
         List<Augment> pool = new ArrayList<>(REGISTRY.values());
-        
-        // Remove already equipped ones to avoid rolling duplicate augments
+
         pool.removeIf(a -> alreadyEquipped.contains(a.getId()));
-        
-        // If a player already has a prismatic, remove prismatics from pool so they can't roll another
+
         boolean hasPrismatic = false;
         for (String equippedId : alreadyEquipped) {
             Augment eq = getAugment(equippedId);
@@ -63,7 +71,7 @@ public final class AugmentRegistry {
                 break;
             }
         }
-        
+
         if (hasPrismatic) {
             pool.removeIf(a -> a.getTier() == AugmentTier.PRISMATIC);
         }
@@ -73,12 +81,11 @@ public final class AugmentRegistry {
         }
 
         Collections.shuffle(pool, ThreadLocalRandom.current());
-        
-        // Pick top 3 or whatever remains
+
         for (int i = 0; i < Math.min(3, pool.size()); i++) {
             choices.add(pool.get(i));
         }
-        
+
         return choices;
     }
 }

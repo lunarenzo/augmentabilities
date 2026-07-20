@@ -2,6 +2,7 @@ package com.lunatech.augmentabilities.augment.impl;
 
 import com.lunatech.augmentabilities.augment.Augment;
 import com.lunatech.augmentabilities.augment.AugmentTier;
+import com.lunatech.augmentabilities.config.AugmentsConfig;
 import com.lunatech.augmentabilities.profile.PlayerAugmentProfile;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -11,6 +12,12 @@ import org.bukkit.util.Vector;
 import java.util.List;
 
 public class PhaseRiftAugment implements Augment {
+    private final AugmentsConfig.PhaseRiftConfig config;
+
+    public PhaseRiftAugment(AugmentsConfig.PhaseRiftConfig config) {
+        this.config = config;
+    }
+
     @Override
     public String getId() {
         return "PHASE_RIFT";
@@ -18,17 +25,21 @@ public class PhaseRiftAugment implements Augment {
 
     @Override
     public String getName() {
-        return "Phase Rift";
+        return config.name;
     }
 
     @Override
     public List<String> getDescription() {
-        return List.of("<gray>Sneak-Sprint (Limit 1 Prismatic):</gray>", "Sneaking while sprinting <light_purple>teleports</light_purple>", "you 5 blocks forward through spaces.", "<dark_gray>Cooldown: 20s</dark_gray>");
+        return config.description;
     }
 
     @Override
     public AugmentTier getTier() {
-        return AugmentTier.PRISMATIC;
+        try {
+            return AugmentTier.valueOf(config.tier.toUpperCase());
+        } catch (Exception e) {
+            return AugmentTier.PRISMATIC;
+        }
     }
 
     @Override
@@ -43,18 +54,17 @@ public class PhaseRiftAugment implements Augment {
                 if (direction.lengthSquared() > 0) {
                     direction.normalize();
                 } else {
-                    return; // No direction found
+                    return;
                 }
             }
 
-            Location target = loc.clone().add(direction.clone().multiply(5));
+            Location target = loc.clone().add(direction.clone().multiply(config.teleportDistance));
             Block targetBlock = target.getBlock();
             Block headBlock = targetBlock.getRelative(0, 1, 0);
 
-            // Simple check to make sure they don't teleport inside a solid wall
             if (targetBlock.getType().isSolid() || headBlock.getType().isSolid()) {
-                // Raycast back to find last air space
-                for (int i = 4; i > 0; i--) {
+                int dist = (int) Math.floor(config.teleportDistance) - 1;
+                for (int i = dist; i > 0; i--) {
                     Location check = loc.clone().add(direction.clone().multiply(i));
                     if (!check.getBlock().getType().isSolid() && !check.getBlock().getRelative(0, 1, 0).getType().isSolid()) {
                         target = check;
@@ -63,13 +73,12 @@ public class PhaseRiftAugment implements Augment {
                 }
             }
 
-            // Keep pitch/yaw from original position
             target.setPitch(loc.getPitch());
             target.setYaw(loc.getYaw());
 
             player.teleport(target);
             player.getWorld().spawnParticle(Particle.PORTAL, player.getLocation(), 30, 0.5, 1, 0.5, 0.1);
-            profile.setCooldown(getId(), 20000);
+            profile.setCooldown(getId(), config.cooldownMs);
         }
     }
 }

@@ -18,6 +18,7 @@ public class ConfigHandler implements Reloadable {
     private final Logger logger;
 
     private PluginConfig cfg;
+    private AugmentsConfig augmentsCfg;
     private DatabaseConfig databaseCfg;
 
     /**
@@ -46,6 +47,16 @@ public class ConfigHandler implements Reloadable {
             .withHeader("")
             .build(PluginConfig.class);
 
+        augmentsCfg = new ConfigLoader()
+            .withLogger(logger)
+            .withDirectory()
+            .withPath(configDir.resolve("augments.yml"))
+            .withHeader("")
+            .withSerializer(b -> {
+                b.registerExact(StringListSerializer.TYPE_TOKEN, StringListSerializer.INSTANCE);
+            })
+            .build(AugmentsConfig.class);
+
         databaseCfg = new ConfigLoader()
             .withLogger(logger)
             .withDirectory()
@@ -65,6 +76,15 @@ public class ConfigHandler implements Reloadable {
      */
     public PluginConfig getConfig() {
         return cfg;
+    }
+
+    /**
+     * Gets augments config object.
+     *
+     * @return the config object
+     */
+    public AugmentsConfig getAugmentsConfig() {
+        return augmentsCfg;
     }
 
     /**

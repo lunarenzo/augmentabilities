@@ -87,6 +87,8 @@ public class AugmentAbilities extends AbstractAugmentAbilities {
         Messaging.init(messagingHandler);
         for (Reloadable handler : handlers)
             handler.onLoad(instance);
+
+        com.lunatech.augmentabilities.augment.AugmentRegistry.init(configHandler.getAugmentsConfig());
     }
 
     @Override

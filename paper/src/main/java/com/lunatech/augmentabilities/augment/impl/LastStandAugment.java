@@ -2,6 +2,7 @@ package com.lunatech.augmentabilities.augment.impl;
 
 import com.lunatech.augmentabilities.augment.Augment;
 import com.lunatech.augmentabilities.augment.AugmentTier;
+import com.lunatech.augmentabilities.config.AugmentsConfig;
 import com.lunatech.augmentabilities.profile.PlayerAugmentProfile;
 import io.github.milkdrinkers.colorparser.paper.ColorParser;
 import org.bukkit.Particle;
@@ -13,6 +14,12 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.List;
 
 public class LastStandAugment implements Augment {
+    private final AugmentsConfig.LastStandConfig config;
+
+    public LastStandAugment(AugmentsConfig.LastStandConfig config) {
+        this.config = config;
+    }
+
     @Override
     public String getId() {
         return "LAST_STAND";
@@ -20,27 +27,33 @@ public class LastStandAugment implements Augment {
 
     @Override
     public String getName() {
-        return "Last Stand";
+        return config.name;
     }
 
     @Override
     public List<String> getDescription() {
-        return List.of("<gray>Passive Cooldown:</gray>", "Grants <blue>Resistance II</blue> for <green>3s</green>", "when falling below <red>3 hearts</red>.", "<dark_gray>Cooldown: 60s</dark_gray>");
+        return config.description;
     }
 
     @Override
     public AugmentTier getTier() {
-        return AugmentTier.COMMON;
+        try {
+            return AugmentTier.valueOf(config.tier.toUpperCase());
+        } catch (Exception e) {
+            return AugmentTier.COMMON;
+        }
     }
 
     @Override
     public void onDamageTaken(Player victim, Entity attacker, EntityDamageByEntityEvent event, PlayerAugmentProfile profile) {
         double finalHealth = victim.getHealth() - event.getFinalDamage();
-        if (finalHealth < 6.0 && !profile.isOnCooldown(getId())) {
-            victim.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 60, 1));
+        if (finalHealth < config.triggerHealthThreshold && !profile.isOnCooldown(getId())) {
+            victim.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, config.resistanceDurationTicks, config.resistanceAmplifier));
             victim.getWorld().spawnParticle(Particle.CRIT, victim.getLocation().add(0, 1, 0), 10, 0.5, 0.5, 0.5, 0.05);
-            profile.setCooldown(getId(), 60000);
-            victim.sendMessage(ColorParser.of(io.github.milkdrinkers.wordweaver.Translation.of("augments.last-stand.activated")).build());
+            profile.setCooldown(getId(), config.cooldownMs);
+            if (config.activationMessage != null && !config.activationMessage.isEmpty()) {
+                victim.sendMessage(ColorParser.of(config.activationMessage).build());
+            }
         }
     }
 }

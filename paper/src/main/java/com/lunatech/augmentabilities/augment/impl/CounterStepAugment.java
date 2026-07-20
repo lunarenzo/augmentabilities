@@ -2,6 +2,7 @@ package com.lunatech.augmentabilities.augment.impl;
 
 import com.lunatech.augmentabilities.augment.Augment;
 import com.lunatech.augmentabilities.augment.AugmentTier;
+import com.lunatech.augmentabilities.config.AugmentsConfig;
 import com.lunatech.augmentabilities.profile.PlayerAugmentProfile;
 import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
@@ -13,6 +14,12 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.List;
 
 public class CounterStepAugment implements Augment {
+    private final AugmentsConfig.CounterStepConfig config;
+
+    public CounterStepAugment(AugmentsConfig.CounterStepConfig config) {
+        this.config = config;
+    }
+
     @Override
     public String getId() {
         return "COUNTER_STEP";
@@ -20,25 +27,29 @@ public class CounterStepAugment implements Augment {
 
     @Override
     public String getName() {
-        return "Counter-Step";
+        return config.name;
     }
 
     @Override
     public List<String> getDescription() {
-        return List.of("<gray>Passive Cooldown:</gray>", "Successfully <blue>blocking</blue> an attack gives", "the attacker <light_purple>Levitation II</light_purple> for 0.75s.", "<dark_gray>Cooldown: 15s</dark_gray>");
+        return config.description;
     }
 
     @Override
     public AugmentTier getTier() {
-        return AugmentTier.RARE;
+        try {
+            return AugmentTier.valueOf(config.tier.toUpperCase());
+        } catch (Exception e) {
+            return AugmentTier.RARE;
+        }
     }
 
     @Override
     public void onDamageTaken(Player victim, Entity attacker, EntityDamageByEntityEvent event, PlayerAugmentProfile profile) {
         if (victim.isBlocking() && attacker instanceof LivingEntity livingAttacker && !profile.isOnCooldown(getId())) {
-            livingAttacker.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 15, 1)); // 0.75s
+            livingAttacker.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, config.levitationDurationTicks, config.levitationAmplifier));
             victim.getWorld().spawnParticle(Particle.CLOUD, victim.getLocation().add(0, 1, 0), 5, 0.2, 0.2, 0.2, 0.1);
-            profile.setCooldown(getId(), 15000);
+            profile.setCooldown(getId(), config.cooldownMs);
         }
     }
 }
