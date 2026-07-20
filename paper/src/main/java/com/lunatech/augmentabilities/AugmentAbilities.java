@@ -114,12 +114,12 @@ public class AugmentAbilities extends AbstractAugmentAbilities {
     }
 
     /**
-     * Use to reload the entire plugin.
+     * Safely reloads configuration files, translations, and augment settings.
      */
     public void onReload() {
-        onDisable();
-        onLoad();
-        onEnable();
+        configHandler.onLoad(this);
+        translationHandler.onEnable(this);
+        com.lunatech.augmentabilities.augment.AugmentRegistry.init(configHandler.getAugmentsConfig());
     }
 
     @Override
