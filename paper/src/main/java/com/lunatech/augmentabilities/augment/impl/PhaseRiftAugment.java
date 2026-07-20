@@ -43,6 +43,11 @@ public class PhaseRiftAugment implements Augment {
     }
 
     @Override
+    public boolean isEnabled() {
+        return config.enabled;
+    }
+
+    @Override
     public void onSneak(Player player, boolean isSneaking, PlayerAugmentProfile profile) {
         if (isSneaking && player.isSprinting() && !profile.isOnCooldown(getId())) {
             Location loc = player.getLocation();

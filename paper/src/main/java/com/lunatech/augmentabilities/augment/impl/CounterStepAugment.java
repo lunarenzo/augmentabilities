@@ -45,6 +45,11 @@ public class CounterStepAugment implements Augment {
     }
 
     @Override
+    public boolean isEnabled() {
+        return config.enabled;
+    }
+
+    @Override
     public void onDamageTaken(Player victim, Entity attacker, EntityDamageByEntityEvent event, PlayerAugmentProfile profile) {
         if (victim.isBlocking() && attacker instanceof LivingEntity livingAttacker && !profile.isOnCooldown(getId())) {
             livingAttacker.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, config.levitationDurationTicks, config.levitationAmplifier));

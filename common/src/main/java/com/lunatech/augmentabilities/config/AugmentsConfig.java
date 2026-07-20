@@ -32,6 +32,9 @@ public class AugmentsConfig implements VersionedConfig {
     public void validate() throws ConfigValidationException {
     }
 
+    @Comment("List of entire tiers to disable (e.g., [\"PRISMATIC\"] or [\"RARE\", \"PRISMATIC\"])")
+    public List<String> disabledTiers = List.of();
+
     @Comment("Vampiric Strike Augment Settings")
     public VampiricStrikeConfig vampiricStrike = new VampiricStrikeConfig();
 
@@ -58,6 +61,7 @@ public class AugmentsConfig implements VersionedConfig {
 
     @ConfigSerializable
     public static class VampiricStrikeConfig {
+        public boolean enabled = true;
         public String name = "Vampiric Strike";
         public String tier = "COMMON";
         public List<String> description = List.of(
@@ -70,6 +74,7 @@ public class AugmentsConfig implements VersionedConfig {
 
     @ConfigSerializable
     public static class LastStandConfig {
+        public boolean enabled = true;
         public String name = "Last Stand";
         public String tier = "COMMON";
         public List<String> description = List.of(
@@ -87,6 +92,7 @@ public class AugmentsConfig implements VersionedConfig {
 
     @ConfigSerializable
     public static class TailwindConfig {
+        public boolean enabled = true;
         public String name = "Tailwind";
         public String tier = "COMMON";
         public List<String> description = List.of(
@@ -101,6 +107,7 @@ public class AugmentsConfig implements VersionedConfig {
 
     @ConfigSerializable
     public static class KineticRedirectionConfig {
+        public boolean enabled = true;
         public String name = "Kinetic Redirection";
         public String tier = "RARE";
         public List<String> description = List.of(
@@ -114,6 +121,7 @@ public class AugmentsConfig implements VersionedConfig {
 
     @ConfigSerializable
     public static class ChemtechGasCloudConfig {
+        public boolean enabled = true;
         public String name = "Chemtech Gas Cloud";
         public String tier = "RARE";
         public List<String> description = List.of(
@@ -133,6 +141,7 @@ public class AugmentsConfig implements VersionedConfig {
 
     @ConfigSerializable
     public static class CounterStepConfig {
+        public boolean enabled = true;
         public String name = "Counter-Step";
         public String tier = "RARE";
         public List<String> description = List.of(
@@ -148,6 +157,7 @@ public class AugmentsConfig implements VersionedConfig {
 
     @ConfigSerializable
     public static class HextechOverdriveConfig {
+        public boolean enabled = true;
         public String name = "Hextech Overdrive";
         public String tier = "PRISMATIC";
         public List<String> description = List.of(
@@ -162,6 +172,7 @@ public class AugmentsConfig implements VersionedConfig {
 
     @ConfigSerializable
     public static class PhaseRiftConfig {
+        public boolean enabled = true;
         public String name = "Phase Rift";
         public String tier = "PRISMATIC";
         public List<String> description = List.of(

@@ -14,6 +14,7 @@ public interface Augment {
     String getName();
     List<String> getDescription();
     AugmentTier getTier();
+    default boolean isEnabled() { return true; }
 
     default void onAttack(Player attacker, LivingEntity victim, EntityDamageByEntityEvent event, PlayerAugmentProfile profile) {}
     default void onDamageTaken(Player victim, Entity attacker, EntityDamageByEntityEvent event, PlayerAugmentProfile profile) {}

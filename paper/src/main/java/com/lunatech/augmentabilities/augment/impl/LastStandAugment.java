@@ -45,6 +45,11 @@ public class LastStandAugment implements Augment {
     }
 
     @Override
+    public boolean isEnabled() {
+        return config.enabled;
+    }
+
+    @Override
     public void onDamageTaken(Player victim, Entity attacker, EntityDamageByEntityEvent event, PlayerAugmentProfile profile) {
         double finalHealth = victim.getHealth() - event.getFinalDamage();
         if (finalHealth < config.triggerHealthThreshold && !profile.isOnCooldown(getId())) {

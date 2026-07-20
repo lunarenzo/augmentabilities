@@ -43,6 +43,11 @@ public class VampiricStrikeAugment implements Augment {
     }
 
     @Override
+    public boolean isEnabled() {
+        return config.enabled;
+    }
+
+    @Override
     public void onAttack(Player attacker, LivingEntity victim, EntityDamageByEntityEvent event, PlayerAugmentProfile profile) {
         if (event.isCritical()) {
             double damage = event.getFinalDamage();

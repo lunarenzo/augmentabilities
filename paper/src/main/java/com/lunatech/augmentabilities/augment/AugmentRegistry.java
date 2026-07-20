@@ -10,6 +10,7 @@ public final class AugmentRegistry {
     private static final List<Augment> COMMONS = new ArrayList<>();
     private static final List<Augment> RARES = new ArrayList<>();
     private static final List<Augment> PRISMATICS = new ArrayList<>();
+    private static final Set<AugmentTier> DISABLED_TIERS = EnumSet.noneOf(AugmentTier.class);
 
     static {
         init(new AugmentsConfig());
@@ -20,9 +21,18 @@ public final class AugmentRegistry {
         COMMONS.clear();
         RARES.clear();
         PRISMATICS.clear();
+        DISABLED_TIERS.clear();
 
         if (config == null) {
             config = new AugmentsConfig();
+        }
+
+        if (config.disabledTiers != null) {
+            for (String t : config.disabledTiers) {
+                try {
+                    DISABLED_TIERS.add(AugmentTier.valueOf(t.trim().toUpperCase()));
+                } catch (Exception ignored) {}
+            }
         }
 
         // Common Tiers
@@ -41,6 +51,13 @@ public final class AugmentRegistry {
     }
 
     private static void register(Augment augment) {
+        if (!augment.isEnabled()) {
+            return;
+        }
+        if (DISABLED_TIERS.contains(augment.getTier())) {
+            return;
+        }
+
         REGISTRY.put(augment.getId(), augment);
         switch (augment.getTier()) {
             case COMMON -> COMMONS.add(augment);
@@ -57,11 +74,15 @@ public final class AugmentRegistry {
         return REGISTRY.values();
     }
 
+    public static boolean isTierDisabled(AugmentTier tier) {
+        return DISABLED_TIERS.contains(tier);
+    }
+
     public static List<Augment> rollThreeChoices(Set<String> alreadyEquipped) {
         List<Augment> choices = new ArrayList<>();
         List<Augment> pool = new ArrayList<>(REGISTRY.values());
 
-        pool.removeIf(a -> alreadyEquipped.contains(a.getId()));
+        pool.removeIf(a -> !a.isEnabled() || DISABLED_TIERS.contains(a.getTier()) || alreadyEquipped.contains(a.getId()));
 
         boolean hasPrismatic = false;
         for (String equippedId : alreadyEquipped) {

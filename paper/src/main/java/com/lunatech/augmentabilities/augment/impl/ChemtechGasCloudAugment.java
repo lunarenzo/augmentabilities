@@ -47,6 +47,11 @@ public class ChemtechGasCloudAugment implements Augment {
     }
 
     @Override
+    public boolean isEnabled() {
+        return config.enabled;
+    }
+
+    @Override
     public void onRightClick(Player player, ItemStack item, PlayerInteractEvent event, PlayerAugmentProfile profile) {
         if (item != null && item.getType().name().endsWith("_SWORD") && !profile.isOnCooldown(getId())) {
             if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {

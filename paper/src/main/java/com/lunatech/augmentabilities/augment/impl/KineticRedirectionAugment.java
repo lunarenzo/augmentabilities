@@ -43,6 +43,11 @@ public class KineticRedirectionAugment implements Augment {
     }
 
     @Override
+    public boolean isEnabled() {
+        return config.enabled;
+    }
+
+    @Override
     public void onDamageTaken(Player victim, Entity attacker, EntityDamageByEntityEvent event, PlayerAugmentProfile profile) {
         if (event.getCause() == EntityDamageByEntityEvent.DamageCause.PROJECTILE) {
             profile.addKineticCharge();
