@@ -21,15 +21,19 @@ public class TranslationHandler implements Reloadable {
 
     @Override
     public void onEnable(AbstractAugmentAbilities plugin) {
-        Translation.initialize(TranslationConfig.builder() // Initialize word-weaver
-            .translationDirectory(plugin.getDataPath().resolve("lang"))
-            .resourcesDirectory(Path.of("lang"))
-            .extractLanguages(true)
-            .updateLanguages(true)
-            .language(configHandler.getConfig().language)
-            .defaultLanguage("en_US")
-            .componentConverter(s -> ColorParser.of(s).build()) // Use color parser for components by default
-            .build()
-        );
+        if (!Translation.isInitialized()) {
+            Translation.initialize(TranslationConfig.builder()
+                .translationDirectory(plugin.getDataPath().resolve("lang"))
+                .resourcesDirectory(Path.of("lang"))
+                .extractLanguages(true)
+                .updateLanguages(true)
+                .language(configHandler.getConfig().language)
+                .defaultLanguage("en_US")
+                .componentConverter(s -> ColorParser.of(s).build())
+                .build()
+            );
+        } else {
+            Translation.reload();
+        }
     }
 }
