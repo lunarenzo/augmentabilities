@@ -5,7 +5,7 @@ import com.lunatech.augmentabilities.augment.AugmentTier;
 import com.lunatech.augmentabilities.config.AugmentsConfig;
 import com.lunatech.augmentabilities.profile.PlayerAugmentProfile;
 import io.github.milkdrinkers.colorparser.paper.ColorParser;
-import org.bukkit.AreaEffectCloud;
+import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
