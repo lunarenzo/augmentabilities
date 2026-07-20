@@ -9,7 +9,6 @@ import com.lunatech.augmentabilities.AugmentAbilities;
 import com.lunatech.augmentabilities.profile.PlayerAugmentProfile;
 import io.github.milkdrinkers.colorparser.paper.ColorParser;
 import io.github.milkdrinkers.wordweaver.Translation;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import static com.lunatech.augmentabilities.command.CommandHandler.BASE_PERM;
@@ -36,9 +35,8 @@ final class AugmentAbilitiesCommand extends Command {
             .withSubcommands(
                 commandMenu(),
                 commandRoll(),
-                commandAdmin(),
-                new TranslationCommand().command(),
-                new DumpCommand().command()
+                commandReload(),
+                commandAdmin()
             )
             .executesPlayer(this::executorMenu);
     }
@@ -56,6 +54,16 @@ final class AugmentAbilitiesCommand extends Command {
             .withPermission(BASE_PERM + ".roll")
             .executesPlayer((player, args) -> {
                 ((AugmentAbilities) plugin).getAugmentService().triggerRollMenu(player);
+            });
+    }
+
+    private CommandAPICommand commandReload() {
+        return new CommandAPICommand("reload")
+            .withHelp("Reload configuration and translations.", "Reload configuration and translations.")
+            .withPermission(BASE_PERM + ".reload")
+            .executes((sender, args) -> {
+                ((AugmentAbilities) plugin).onReload();
+                sender.sendMessage(ColorParser.of(Translation.of("commands-augment.reloaded")).build());
             });
     }
 

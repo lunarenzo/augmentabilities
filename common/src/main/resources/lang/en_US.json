@@ -5,24 +5,6 @@
     "update-found-player": "\n<white>An update was found for <plugin_name>!\n  <dark_gray>• <white>Current version: <red>v<version_current>\n  <dark_gray>• <white>Latest version: <green><click:open_url:'<download_link>'><hover:show_text:'<green>Open Download Page'>v<version_latest></hover></click>\n",
     "update-failed": "<yellow>Failed to fetch latest version, error: <error>"
   },
-  "commands": {
-    "translation": {
-      "help": "\n<white>Translations subcommands:\n  <dark_gray>• <white>reload: <gray><i>Reloads the translation files.\n  <dark_gray>• <white>test <node>: <gray><i>Test a translation.\n",
-      "reloaded": "<green>Successfully reloaded translations!",
-      "test": {
-        "not-string": "<red>Translation node must be a string!",
-        "not-empty": "<red>Translation node \"<u><node></u>\" cannot be empty!",
-        "illegal": "<red>Translation node \"<u><node></u>\" cannot begin or end with a period!",
-        "not-found": "<red>Translation entry for node \"<u><node></u>\" doesn't exist!",
-        "not-empty2": "<red>Translation entry for node \"<u><node></u>\" is empty!"
-      }
-    },
-    "dump": {
-      "success": "<green>Successfully uploaded dump to <hover:show_text:'Click to open link'><click:open_url:'<link>'><u><link></u></click></hover>.",
-      "failure": "<red>Failed to upload dump: <error>",
-      "dumping": "<green>Gathering dump information and uploading to mclo.gs..."
-    }
-  },
   "kills-progression": {
     "earned-direct": "<gold>You earned an immediate Augment Roll for killing <victim> (who had 3 augments equipped)!</gold>",
     "earned-milestone": "<gold><b>5 KILLS REACHED!</b> You earned 1 Augment Roll. Sneak + Left-Click with empty hand or type /augment to open.</gold>",
@@ -33,7 +15,8 @@
     "give-success": "<green>Gave <rolls> rolls to <player>.</green>",
     "received-rolls": "<gold>You received <rolls> augment rolls from an admin!</gold>",
     "clear-success": "<green>Cleared augments for <player>.</green>",
-    "cleared-by-admin": "<red>Your augments have been cleared by an admin.</red>"
+    "cleared-by-admin": "<red>Your augments have been cleared by an admin.</red>",
+    "reloaded": "<green>Successfully reloaded AugmentAbilities config & translations!</green>"
   },
   "gui": {
     "title-management": "Augment Abilities Management",
@@ -55,16 +38,5 @@
     "roll-button-lore-2": "<green>Click to roll 3 random choices!</green>",
     "no-rolls-button": "<red>No Rolls Available</red>",
     "no-rolls-button-lore": "<gray>Kill <yellow>5 players</yellow> to get an augment roll.</gray>"
-  },
-  "augments": {
-    "last-stand": {
-      "activated": "<red>Last Stand activated!</red>"
-    },
-    "chemtech": {
-      "activated": "<green>Chemtech Gas Cloud deployed!</green>"
-    },
-    "hextech": {
-      "activated": "<yellow>Hextech Overdrive triggered!</yellow>"
-    }
   }
 }
