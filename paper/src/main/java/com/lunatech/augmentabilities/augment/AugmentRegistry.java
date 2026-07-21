@@ -39,15 +39,24 @@ public final class AugmentRegistry {
         register(new VampiricStrikeAugment(config.vampiricStrike));
         register(new LastStandAugment(config.lastStand));
         register(new TailwindAugment(config.tailwind));
+        register(new AdrenalineRushAugment(config.adrenalineRush));
+        register(new FeatherweightStepAugment(config.featherweightStep));
+        register(new GlancingBlowAugment(config.glancingBlow));
 
         // Rare Tiers
         register(new KineticRedirectionAugment(config.kineticRedirection));
         register(new ChemtechGasCloudAugment(config.chemtechGasCloud));
         register(new CounterStepAugment(config.counterStep));
+        register(new FrostbiteStrikeAugment(config.frostbiteStrike));
+        register(new StaticShieldAugment(config.staticShield));
+        register(new SoulSiphonAugment(config.soulSiphon));
 
         // Prismatic Tiers
         register(new HextechOverdriveAugment(config.hextechOverdrive));
         register(new PhaseRiftAugment(config.phaseRift));
+        register(new ChronosAnchorAugment(config.chronosAnchor));
+        register(new CelestialAegisAugment(config.celestialAegis));
+        register(new VoidSingularityAugment(config.voidSingularity));
     }
 
     private static void register(Augment augment) {

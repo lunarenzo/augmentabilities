@@ -5,6 +5,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import java.util.List;
@@ -18,6 +19,8 @@ public interface Augment {
 
     default void onAttack(Player attacker, LivingEntity victim, EntityDamageByEntityEvent event, PlayerAugmentProfile profile) {}
     default void onDamageTaken(Player victim, Entity attacker, EntityDamageByEntityEvent event, PlayerAugmentProfile profile) {}
+    default void onGeneralDamageTaken(Player victim, EntityDamageEvent event, PlayerAugmentProfile profile) {}
     default void onSneak(Player player, boolean isSneaking, PlayerAugmentProfile profile) {}
     default void onRightClick(Player player, ItemStack item, PlayerInteractEvent event, PlayerAugmentProfile profile) {}
+    default void onKill(Player killer, LivingEntity victim, PlayerAugmentProfile profile) {}
 }

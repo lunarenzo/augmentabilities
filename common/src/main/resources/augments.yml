@@ -48,6 +48,45 @@ tailwind:
   speed-amplifier: 0
   cooldown-ms: 15000
 
+adrenaline-rush:
+  enabled: true
+  name: "Adrenaline Rush"
+  tier: "COMMON"
+  description:
+    - "<gray>Passive Cooldown:</gray>"
+    - "Falling below 50% HP grants"
+    - "<aqua>Speed I</aqua> & <gold>Haste I</gold> for 4s."
+    - "<dark_gray>Cooldown: 25s</dark_gray>"
+  health-threshold-percent: 0.50
+  speed-duration-ticks: 80
+  speed-amplifier: 0
+  haste-duration-ticks: 80
+  haste-amplifier: 0
+  cooldown-ms: 25000
+  activation-message: "<gold>Adrenaline Rush triggered!</gold>"
+
+featherweight-step:
+  enabled: true
+  name: "Featherweight Step"
+  tier: "COMMON"
+  description:
+    - "<gray>Passive:</gray>"
+    - "Reduces fall damage by <green>50%</green>"
+    - "and converts impact into a forward dash."
+  fall-damage-reduction: 0.50
+  forward-impulse: 0.6
+
+glancing-blow:
+  enabled: true
+  name: "Glancing Blow"
+  tier: "COMMON"
+  description:
+    - "<gray>Passive:</gray>"
+    - "<yellow>15% chance</yellow> to dodge"
+    - "<green>40%</green> of incoming damage."
+  dodge-chance: 0.15
+  damage-reduction-percent: 0.40
+
 kinetic-redirection:
   enabled: true
   name: "Kinetic Redirection"
@@ -89,6 +128,48 @@ counter-step:
   levitation-amplifier: 1
   cooldown-ms: 15000
 
+frostbite-strike:
+  enabled: true
+  name: "Frostbite Strike"
+  tier: "RARE"
+  description:
+    - "<gray>Passive Cooldown:</gray>"
+    - "3 consecutive hits apply"
+    - "<blue>Slowness II</blue> for 2.5s."
+    - "<dark_gray>Cooldown: 15s</dark_gray>"
+  required-hits: 3
+  slowness-duration-ticks: 50
+  slowness-amplifier: 1
+  cooldown-ms: 15000
+
+static-shield:
+  enabled: true
+  name: "Static Shield"
+  tier: "RARE"
+  description:
+    - "<gray>Sneak + Shield Active:</gray>"
+    - "Unleashes an electric shockwave"
+    - "damaging and knocking back enemies."
+    - "<dark_gray>Cooldown: 20s</dark_gray>"
+  radius: 4.0
+  damage: 3.0
+  knockback-power: 0.8
+  cooldown-ms: 20000
+  activation-message: "<aqua>Static Shield discharged!</aqua>"
+
+soul-siphon:
+  enabled: true
+  name: "Soul Siphon"
+  tier: "RARE"
+  description:
+    - "<gray>Passive On Kill:</gray>"
+    - "Killing an entity restores food"
+    - "and grants <green>Regeneration II</green> for 3s."
+  food-restored: 4
+  saturation-restored: 4.0
+  regen-duration-ticks: 60
+  regen-amplifier: 1
+
 hextech-overdrive:
   enabled: true
   name: "Hextech Overdrive"
@@ -112,3 +193,45 @@ phase-rift:
     - "<dark_gray>Cooldown: 20s</dark_gray>"
   teleport-distance: 5.0
   cooldown-ms: 20000
+
+chronos-anchor:
+  enabled: true
+  name: "Chronos Anchor"
+  tier: "PRISMATIC"
+  description:
+    - "<gray>Sneak + Empty Hand Active (Limit 1):</gray>"
+    - "Teleports you to position from 4s ago"
+    - "and heals <green>25% missing HP</green>."
+    - "<dark_gray>Cooldown: 45s</dark_gray>"
+  heal-missing-health-percent: 0.25
+  cooldown-ms: 45000
+  activation-message: "<light_purple>Chronos Anchor rewinded time!</light_purple>"
+
+celestial-aegis:
+  enabled: true
+  name: "Celestial Aegis"
+  tier: "PRISMATIC"
+  description:
+    - "<gray>Passive Fatal Blow Protection (Limit 1):</gray>"
+    - "Taking fatal damage cancels death,"
+    - "restores health & grants invulnerability."
+    - "<dark_gray>Cooldown: 180s</dark_gray>"
+  revive-health: 4.0
+  invulnerability-duration-ticks: 40
+  cooldown-ms: 180000
+  activation-message: "<gold><b>CELESTIAL AEGIS SAVED YOUR LIFE!</b></gold>"
+
+void-singularity:
+  enabled: true
+  name: "Void Singularity"
+  tier: "PRISMATIC"
+  description:
+    - "<gray>Sneak + Sword Active (Limit 1):</gray>"
+    - "Summons a vortex pulling enemies"
+    - "before detonating for <dark_purple>6 True Damage</dark_purple>."
+    - "<dark_gray>Cooldown: 35s</dark_gray>"
+  cast-range: 8.0
+  pull-radius: 4.5
+  detonation-true-damage: 6.0
+  cooldown-ms: 35000
+  activation-message: "<dark_purple>Void Singularity summoned!</dark_purple>"

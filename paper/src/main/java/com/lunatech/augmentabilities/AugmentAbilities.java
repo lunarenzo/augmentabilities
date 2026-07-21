@@ -105,6 +105,15 @@ public class AugmentAbilities extends AbstractAugmentAbilities {
             Logger.get().warn(ColorParser.of("<yellow>Messaging handler failed to start. Messaging support has been disabled.").build());
             Bukkit.getPluginManager().disablePlugin(this);
         }
+
+        Bukkit.getScheduler().runTaskTimer(this, () -> {
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                com.lunatech.augmentabilities.profile.PlayerAugmentProfile profile = augmentService.getProfile(p.getUniqueId());
+                if (profile.hasAugment("CHRONOS_ANCHOR")) {
+                    profile.recordPosition(p.getLocation());
+                }
+            }
+        }, 20L, 20L);
     }
 
     @Override

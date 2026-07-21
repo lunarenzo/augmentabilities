@@ -26,6 +26,14 @@ public class PlayerAugmentProfile {
     private int kineticCharges = 0;
     private long lastKineticHit = 0;
 
+    // Frostbite Strike state
+    private final Map<UUID, Integer> frostbiteHits = new HashMap<>();
+    private long lastFrostbiteHit = 0;
+
+    // Chronos Anchor position ring buffer
+    private final org.bukkit.Location[] positionHistory = new org.bukkit.Location[5];
+    private int positionHistoryIndex = 0;
+
     public PlayerAugmentProfile(UUID playerUuid) {
         this.playerUuid = playerUuid;
     }
@@ -157,5 +165,31 @@ public class PlayerAugmentProfile {
 
     public void resetKineticCharges() {
         kineticCharges = 0;
+    }
+
+    // Frostbite Strike helper methods
+    public int incrementFrostbiteHits(UUID victimId) {
+        if (System.currentTimeMillis() - lastFrostbiteHit > 4000) {
+            frostbiteHits.clear();
+        }
+        lastFrostbiteHit = System.currentTimeMillis();
+        int hits = frostbiteHits.getOrDefault(victimId, 0) + 1;
+        frostbiteHits.put(victimId, hits);
+        return hits;
+    }
+
+    public void resetFrostbiteHits(UUID victimId) {
+        frostbiteHits.remove(victimId);
+    }
+
+    // Chronos Anchor helper methods
+    public void recordPosition(org.bukkit.Location loc) {
+        positionHistory[positionHistoryIndex] = loc.clone();
+        positionHistoryIndex = (positionHistoryIndex + 1) % 5;
+    }
+
+    public org.bukkit.Location getOldestRecordedPosition() {
+        org.bukkit.Location loc = positionHistory[positionHistoryIndex];
+        return loc != null ? loc : positionHistory[(positionHistoryIndex + 4) % 5];
     }
 }

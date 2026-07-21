@@ -12,6 +12,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -35,6 +37,19 @@ public class AugmentListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         service.handleQuit(event.getPlayer().getUniqueId());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onGeneralDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player victim) {
+            PlayerAugmentProfile profile = service.getProfile(victim.getUniqueId());
+            for (String id : profile.getEquippedAugmentIds()) {
+                Augment aug = AugmentRegistry.getAugment(id);
+                if (aug != null) {
+                    aug.onGeneralDamageTaken(victim, event, profile);
+                }
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -96,6 +111,21 @@ public class AugmentListener implements Listener {
             Augment aug = AugmentRegistry.getAugment(id);
             if (aug != null) {
                 aug.onRightClick(player, event.getItem(), event, profile);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onEntityDeath(EntityDeathEvent event) {
+        LivingEntity victim = event.getEntity();
+        Player killer = victim.getKiller();
+        if (killer != null) {
+            PlayerAugmentProfile profile = service.getProfile(killer.getUniqueId());
+            for (String id : profile.getEquippedAugmentIds()) {
+                Augment aug = AugmentRegistry.getAugment(id);
+                if (aug != null) {
+                    aug.onKill(killer, victim, profile);
+                }
             }
         }
     }
