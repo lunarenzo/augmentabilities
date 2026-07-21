@@ -89,7 +89,7 @@ public class VoidSingularityAugment implements Augment {
 
                 // Final detonation
                 Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                    center.getWorld().spawnParticle(Particle.SQUID_INK, center, 40, 1.0, 1.0, 1.0, 0.2);
+                    center.getWorld().spawnParticle(Particle.LARGE_SMOKE, center, 40, 1.0, 1.0, 1.0, 0.2);
                     center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 30, 0.5, 0.5, 0.5, 0.1);
                     for (Entity entity : center.getWorld().getNearbyEntities(center, radius, radius, radius)) {
                         if (entity instanceof LivingEntity target && target != player) {
