@@ -79,7 +79,7 @@ public class VoidSingularityAugment implements Augment {
                         double currentRadius = baseRadius * (1.0 - (progress * progress)); // Eased Inward Collapse Radius
                         double theta = t * 0.6; // Angular rotation speed
 
-                        // Dual Inward Helices (180deg phase difference) using REVERSE_PORTAL
+                        // Dual Inward Helices (180deg phase difference)
                         double x1 = currentRadius * Math.cos(theta);
                         double z1 = currentRadius * Math.sin(theta);
                         double x2 = currentRadius * Math.cos(theta + Math.PI);
@@ -88,13 +88,14 @@ public class VoidSingularityAugment implements Augment {
                         Location p1 = center.clone().add(x1, 0.2 + (progress * 0.5), z1);
                         Location p2 = center.clone().add(x2, 0.2 + (progress * 0.5), z2);
 
-                        center.getWorld().spawnParticle(Particle.REVERSE_PORTAL, p1, 4, 0.05, 0.05, 0.05, 0.02);
-                        center.getWorld().spawnParticle(Particle.REVERSE_PORTAL, p2, 4, 0.05, 0.05, 0.05, 0.02);
+                        // Automated Data Verification Spawner
+                        spawnSafeParticle(p1, Particle.REVERSE_PORTAL, 4, 0.05, 0.05, 0.05, 0.02);
+                        spawnSafeParticle(p2, Particle.REVERSE_PORTAL, 4, 0.05, 0.05, 0.05, 0.02);
 
-                        // Dark Abyssal Core Ambient using DRAGON_BREATH
-                        center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 8, 0.2, 0.3, 0.2, 0.01);
-                        center.getWorld().spawnParticle(Particle.WITCH, center, 6, 0.2, 0.3, 0.2, 0.02);
-                        center.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, center, 3, 0.1, 0.1, 0.1, 0.01);
+                        // Dark Abyssal Core Ambient
+                        spawnSafeParticle(center, Particle.DRAGON_BREATH, 8, 0.2, 0.3, 0.2, 0.01);
+                        spawnSafeParticle(center, Particle.WITCH, 6, 0.2, 0.3, 0.2, 0.02);
+                        spawnSafeParticle(center, Particle.SOUL_FIRE_FLAME, 3, 0.1, 0.1, 0.1, 0.01);
 
                         // Accelerating Gravitational Pull
                         double pullMultiplier = 0.35 + (progress * 0.40);
@@ -113,12 +114,12 @@ public class VoidSingularityAugment implements Augment {
                 // 2. Violent Prismatic Detonation & Shockwave (Tick 30)
                 Bukkit.getScheduler().runTaskLater(plugin, () -> {
                     // Multi-layer Detonation: Flash + Sonic Boom + Explosion + Dragon Breath & Soul Flame Burst
-                    center.getWorld().spawnParticle(Particle.FLASH, center, 1, 0, 0, 0, 0);
-                    center.getWorld().spawnParticle(Particle.SONIC_BOOM, center, 1, 0, 0, 0, 0);
-                    center.getWorld().spawnParticle(Particle.EXPLOSION, center, 3, 0.2, 0.2, 0.2, 0.05);
-                    center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 40, 1.2, 0.8, 1.2, 0.15);
-                    center.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, center, 35, 1.0, 0.8, 1.0, 0.15);
-                    center.getWorld().spawnParticle(Particle.LARGE_SMOKE, center, 25, 0.8, 0.5, 0.8, 0.1);
+                    spawnSafeParticle(center, Particle.FLASH, 1, 0, 0, 0, 0);
+                    spawnSafeParticle(center, Particle.SONIC_BOOM, 1, 0, 0, 0, 0);
+                    spawnSafeParticle(center, Particle.EXPLOSION, 3, 0.2, 0.2, 0.2, 0.05);
+                    spawnSafeParticle(center, Particle.DRAGON_BREATH, 40, 1.2, 0.8, 1.2, 0.15);
+                    spawnSafeParticle(center, Particle.SOUL_FIRE_FLAME, 35, 1.0, 0.8, 1.0, 0.15);
+                    spawnSafeParticle(center, Particle.LARGE_SMOKE, 25, 0.8, 0.5, 0.8, 0.1);
 
                     // Apply True Damage to trapped enemies
                     for (Entity entity : center.getWorld().getNearbyEntities(center, baseRadius, baseRadius, baseRadius)) {
@@ -128,6 +129,14 @@ public class VoidSingularityAugment implements Augment {
                     }
                 }, 30L);
             }
+        }
+    }
+
+    private void spawnSafeParticle(Location location, Particle particle, int count, double offsetX, double offsetY, double offsetZ, double speed) {
+        if (particle.getDataType() == Float.class) {
+            location.getWorld().spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, speed, 1.0f);
+        } else {
+            location.getWorld().spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, speed);
         }
     }
 }
