@@ -79,7 +79,7 @@ public class VoidSingularityAugment implements Augment {
                         double currentRadius = baseRadius * (1.0 - (progress * progress)); // Eased Inward Collapse Radius
                         double theta = t * 0.6; // Angular rotation speed
 
-                        // Dual Inward Helices (180deg phase difference)
+                        // Dual Inward Helices (180deg phase difference) using REVERSE_PORTAL with 0.0f Float data
                         double x1 = currentRadius * Math.cos(theta);
                         double z1 = currentRadius * Math.sin(theta);
                         double x2 = currentRadius * Math.cos(theta + Math.PI);
@@ -88,14 +88,13 @@ public class VoidSingularityAugment implements Augment {
                         Location p1 = center.clone().add(x1, 0.2 + (progress * 0.5), z1);
                         Location p2 = center.clone().add(x2, 0.2 + (progress * 0.5), z2);
 
-                        // Data-less particles guaranteed compatible with Paper 1.21
-                        center.getWorld().spawnParticle(Particle.PORTAL, p1, 4, 0.05, 0.05, 0.05, 0.02);
-                        center.getWorld().spawnParticle(Particle.ENCHANT, p2, 4, 0.05, 0.05, 0.05, 0.02);
+                        center.getWorld().spawnParticle(Particle.REVERSE_PORTAL, p1, 4, 0.05, 0.05, 0.05, 0.02, 0.0f);
+                        center.getWorld().spawnParticle(Particle.REVERSE_PORTAL, p2, 4, 0.05, 0.05, 0.05, 0.02, 0.0f);
 
-                        // Dark Abyssal Core Ambient
+                        // Dark Abyssal Core Ambient using DRAGON_BREATH with 0.0f Float data
+                        center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 8, 0.2, 0.3, 0.2, 0.01, 0.0f);
                         center.getWorld().spawnParticle(Particle.WITCH, center, 6, 0.2, 0.3, 0.2, 0.02);
-                        center.getWorld().spawnParticle(Particle.LARGE_SMOKE, center, 3, 0.1, 0.2, 0.1, 0.01);
-                        center.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, center, 2, 0.1, 0.1, 0.1, 0.01);
+                        center.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, center, 3, 0.1, 0.1, 0.1, 0.01);
 
                         // Accelerating Gravitational Pull
                         double pullMultiplier = 0.35 + (progress * 0.40);
@@ -113,10 +112,11 @@ public class VoidSingularityAugment implements Augment {
 
                 // 2. Violent Prismatic Detonation & Shockwave (Tick 30)
                 Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                    // Multi-layer Detonation: Flash + Sonic Boom + Explosion + Soul Flame Burst
+                    // Multi-layer Detonation: Flash + Sonic Boom + Explosion + Dragon Breath & Soul Flame Burst
                     center.getWorld().spawnParticle(Particle.FLASH, center, 1, 0, 0, 0, 0);
                     center.getWorld().spawnParticle(Particle.SONIC_BOOM, center, 1, 0, 0, 0, 0);
                     center.getWorld().spawnParticle(Particle.EXPLOSION, center, 3, 0.2, 0.2, 0.2, 0.05);
+                    center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 40, 1.2, 0.8, 1.2, 0.15, 0.0f);
                     center.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, center, 35, 1.0, 0.8, 1.0, 0.15);
                     center.getWorld().spawnParticle(Particle.LARGE_SMOKE, center, 25, 0.8, 0.5, 0.8, 0.1);
 
