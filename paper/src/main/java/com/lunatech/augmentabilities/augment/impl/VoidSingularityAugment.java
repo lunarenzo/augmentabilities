@@ -69,29 +69,57 @@ public class VoidSingularityAugment implements Augment {
                 }
 
                 JavaPlugin plugin = JavaPlugin.getPlugin(AugmentAbilities.class);
-                double radius = config.pullRadius;
+                double baseRadius = config.pullRadius;
 
-                // Vortex pull task
-                for (int t = 0; t < 25; t += 5) {
+                // 1. Phased Swirling Vortex Pull (Ticks 0 to 25)
+                for (int tick = 0; tick <= 25; tick += 2) {
+                    final int t = tick;
                     Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                        center.getWorld().spawnParticle(Particle.PORTAL, center, 20, radius / 2, 0.5, radius / 2, 0.1);
-                        for (Entity entity : center.getWorld().getNearbyEntities(center, radius, radius, radius)) {
+                        double progress = t / 25.0; // 0.0 -> 1.0
+                        double currentRadius = baseRadius * (1.0 - (progress * progress)); // Eased Inward Collapse Radius
+                        double theta = t * 0.6; // Angular rotation speed
+
+                        // Dual Inward Helices (180deg phase difference)
+                        double x1 = currentRadius * Math.cos(theta);
+                        double z1 = currentRadius * Math.sin(theta);
+                        double x2 = currentRadius * Math.cos(theta + Math.PI);
+                        double z2 = currentRadius * Math.sin(theta + Math.PI);
+
+                        Location p1 = center.clone().add(x1, 0.2 + (progress * 0.5), z1);
+                        Location p2 = center.clone().add(x2, 0.2 + (progress * 0.5), z2);
+
+                        center.getWorld().spawnParticle(Particle.REVERSE_PORTAL, p1, 3, 0.05, 0.05, 0.05, 0.02);
+                        center.getWorld().spawnParticle(Particle.REVERSE_PORTAL, p2, 3, 0.05, 0.05, 0.05, 0.02);
+
+                        // Dark Abyssal Core Ambient
+                        center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 6, 0.2, 0.3, 0.2, 0.01);
+                        center.getWorld().spawnParticle(Particle.WITCH, center, 4, 0.1, 0.2, 0.1, 0.02);
+
+                        // Accelerating Gravitational Pull
+                        double pullMultiplier = 0.35 + (progress * 0.40);
+                        for (Entity entity : center.getWorld().getNearbyEntities(center, baseRadius, baseRadius, baseRadius)) {
                             if (entity instanceof LivingEntity target && target != player) {
-                                Vector pull = center.toVector().subtract(target.getLocation().toVector()).setY(0.2);
+                                Vector pull = center.toVector().subtract(target.getLocation().toVector()).setY(0.25);
                                 if (pull.lengthSquared() > 0) {
                                     pull.normalize();
                                 }
-                                target.setVelocity(pull.multiply(0.5));
+                                target.setVelocity(pull.multiply(pullMultiplier));
                             }
                         }
                     }, t);
                 }
 
-                // Final detonation
+                // 2. Violent Prismatic Detonation & Shockwave (Tick 30)
                 Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                    center.getWorld().spawnParticle(Particle.LARGE_SMOKE, center, 40, 1.0, 1.0, 1.0, 0.2);
-                    center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 30, 0.5, 0.5, 0.5, 0.1);
-                    for (Entity entity : center.getWorld().getNearbyEntities(center, radius, radius, radius)) {
+                    // Multi-layer Detonation: Flash + Sonic Boom + Explosion + Abyssal Dragon Breath Burst
+                    center.getWorld().spawnParticle(Particle.FLASH, center, 1, 0, 0, 0, 0);
+                    center.getWorld().spawnParticle(Particle.SONIC_BOOM, center, 1, 0, 0, 0, 0);
+                    center.getWorld().spawnParticle(Particle.EXPLOSION, center, 2, 0.2, 0.2, 0.2, 0.05);
+                    center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 40, 1.2, 0.8, 1.2, 0.15);
+                    center.getWorld().spawnParticle(Particle.LARGE_SMOKE, center, 25, 0.8, 0.5, 0.8, 0.1);
+
+                    // Apply True Damage to trapped enemies
+                    for (Entity entity : center.getWorld().getNearbyEntities(center, baseRadius, baseRadius, baseRadius)) {
                         if (entity instanceof LivingEntity target && target != player) {
                             target.damage(config.detonationTrueDamage, player);
                         }
